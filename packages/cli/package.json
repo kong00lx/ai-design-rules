@@ -31,5 +31,14 @@
   },
   "engines": {
     "node": ">=22.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kong00lx/ai-design-rules.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/kong00lx/ai-design-rules#readme",
+  "publishConfig": {
+    "access": "public"
   }
 }

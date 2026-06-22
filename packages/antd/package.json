@@ -1,13 +1,21 @@
 {
   "name": "@ai-design-rules/antd",
   "version": "0.1.0",
-  "description": "AI-executable design rules for Ant Design projects",
-  "keywords": ["ant-design", "cursor-rules", "ai", "design-system", "ui"],
+  "description": "AI-executable design rules for Ant Design projects — Cursor Rules + Skills",
+  "keywords": ["ant-design", "antd", "cursor-rules", "ai", "design-system", "ui", "llm"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kong00lx/ai-design-rules.git",
+    "directory": "packages/antd"
+  },
+  "homepage": "https://github.com/kong00lx/ai-design-rules#readme",
   "files": [
     "rules/",
-    "skills/"
+    "skills/",
+    "README.md"
   ],
-  "scripts": {
-    "install-rules": "node ../../packages/cli/src/install.js --package=antd"
+  "publishConfig": {
+    "access": "public"
   }
 }
