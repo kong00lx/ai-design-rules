@@ -1,0 +1,185 @@
+---
+description: 数据录入设计模式。表单布局、字段选择、校验策略的完整决策树。
+globs:
+  - "**/*.tsx"
+  - "**/*.jsx"
+alwaysApply: false
+---
+
+# 数据录入设计模式（Level 4）
+
+## 表单布局决策树
+
+```
+字段数量？
+├── 1-3 个字段    → 行内布局（Inline Form）或单列
+├── 4-8 个字段    → 单列垂直（layout="vertical"）
+├── 9-15 个字段   → 双列（Row+Col md={12}）
+└── 15+ 个字段    → 分组折叠（Collapse / Steps 分步骤）
+
+是否有明确的步骤关系？
+├── 是 → 分步骤表单（Steps + 每步独立 Form）
+└── 否 → 单页表单（折叠分组）
+```
+
+---
+
+## 字段选择决策树
+
+```
+用户需要输入什么？
+│
+├── 自由文本（短）     → <Input>
+├── 自由文本（长）     → <Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }}>
+├── 数字              → <InputNumber> （带单位用 addonAfter）
+├── 密码              → <Input.Password>
+├── 搜索              → <Input.Search> 或带防抖的 Input
+│
+├── 从固定选项选一个
+│   ├── 选项 ≤ 4 个   → <Radio.Group>（选项直接展示）
+│   ├── 选项 5-15 个  → <Select>
+│   └── 选项 > 15 个  → <Select showSearch>（可搜索）
+│
+├── 从固定选项选多个
+│   ├── 选项 ≤ 5 个   → <Checkbox.Group>
+│   └── 选项 > 5 个   → <Select mode="multiple">
+│
+├── 是/否二元选择     → <Switch> （当前状态需要立即生效）
+│                      or <Checkbox>（需要提交时才生效）
+│
+├── 层级数据
+│   ├── 2-3 层级联    → <Cascader>
+│   └── 树形结构      → <TreeSelect>
+│
+├── 时间相关
+│   ├── 日期          → <DatePicker>
+│   ├── 时间          → <TimePicker>
+│   ├── 日期+时间     → <DatePicker showTime>
+│   └── 日期范围      → <RangePicker>
+│
+├── 数值范围          → <Slider range> 或两个 <InputNumber>
+├── 文件上传          → <Upload> （普通）或 <Upload.Dragger>（拖拽）
+└── 颜色选择          → <ColorPicker>
+```
+
+---
+
+## 表单校验策略
+
+### 校验时机
+
+```tsx
+// ✅ 推荐：失焦触发 + 提交时全量校验
+<Form validateTrigger={['onBlur', 'onSubmit']}>
+
+// 实时校验（输入中校验）仅用于：密码强度、用户名唯一性检查
+<Form.Item validateTrigger="onChange">
+```
+
+### 校验规则写法
+
+```tsx
+<Form.Item
+  name="email"
+  label="邮箱"
+  rules={[
+    { required: true, message: '请输入邮箱地址' },
+    { type: 'email', message: '请输入有效的邮箱格式' },
+    // 异步校验（如查重）
+    {
+      validator: async (_, value) => {
+        const exists = await checkEmailExists(value);
+        if (exists) throw new Error('该邮箱已被注册');
+      },
+      validateTrigger: 'onBlur',
+    },
+  ]}
+>
+  <Input placeholder="请输入邮箱" />
+</Form.Item>
+```
+
+### 错误提示措辞规范
+
+```
+✅ 正确措辞（告诉用户怎么做）
+"请输入用户名"           → required
+"用户名至少 4 个字符"    → minLength
+"只能包含字母和数字"     → pattern
+"该用户名已被使用"       → async
+
+❌ 错误措辞
+"用户名不能为空"         → 负面表达
+"Invalid"               → 太简单，不说明原因
+"Error"                 → 同上
+```
+
+---
+
+## 标准表单模板
+
+```tsx
+const [form] = Form.useForm();
+const [loading, setLoading] = useState(false);
+
+const handleSubmit = async (values: FormValues) => {
+  setLoading(true);
+  try {
+    await submitAPI(values);
+    message.success('保存成功');
+    form.resetFields();  // 或跳转
+  } catch (error) {
+    message.error('保存失败，请重试');
+  } finally {
+    setLoading(false);
+  }
+};
+
+return (
+  <Form
+    form={form}
+    layout="vertical"
+    onFinish={handleSubmit}
+    scrollToFirstError  // 提交时自动滚动到第一个错误
+  >
+    {/* 字段组 */}
+    <Row gutter={[16, 0]}>
+      <Col xs={24} md={12}>
+        <Form.Item name="name" label="姓名" rules={[{ required: true }]}>
+          <Input placeholder="请输入姓名" />
+        </Form.Item>
+      </Col>
+      <Col xs={24} md={12}>
+        <Form.Item name="email" label="邮箱" rules={[{ required: true, type: 'email' }]}>
+          <Input placeholder="请输入邮箱" />
+        </Form.Item>
+      </Col>
+    </Row>
+
+    {/* 操作区 */}
+    <Form.Item>
+      <Space>
+        <Button type="primary" htmlType="submit" loading={loading}>
+          提交
+        </Button>
+        <Button onClick={() => form.resetFields()}>
+          重置
+        </Button>
+      </Space>
+    </Form.Item>
+  </Form>
+);
+```
+
+---
+
+## 禁止事项
+
+```
+❌ 不用 onChange 手动维护所有字段 state（用 Form 统一管理）
+❌ 不在 Form 外部读取表单值（用 form.getFieldsValue()）
+❌ 不用 alert() 弹窗提示校验错误（用 Form.Item rules）
+❌ 不把所有字段设为 required（用户会反感）
+❌ 不省略 placeholder（用户需要知道该填什么格式）
+❌ 不在移动端用 DatePicker（体验差，考虑原生 input type="date"）
+```

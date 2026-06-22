@@ -1,0 +1,177 @@
+---
+description: Ant Design 组件选择决策树。遇到任何 UI 需求时，先查这里。禁止用裸 HTML 实现 antd 已有的功能。
+globs:
+  - "**/*.tsx"
+  - "**/*.jsx"
+alwaysApply: false
+---
+
+# Ant Design 组件选择规范（Level 5）
+
+## 核心原则
+
+> **永远不要从零造 UI。** 遇到任何 UI 需求，先问：antd 有没有对应的组件？
+
+---
+
+## 组件选择决策树
+
+### 输入与表单
+
+| 需求场景 | ✅ 必须用 | ❌ 禁止自造 |
+|----------|-----------|------------|
+| 单行文字输入 | `<Input>` | 裸 `<input>` |
+| 多行文字 | `<Input.TextArea>` | 裸 `<textarea>` |
+| 密码输入 | `<Input.Password>` | input type="password" 裸写 |
+| 搜索框 | `<Input.Search>` | Input + 自制按钮 |
+| 数字输入 | `<InputNumber>` | input type="number" |
+| 下拉选择（单选） | `<Select>` | 自制 dropdown |
+| 下拉选择（多选） | `<Select mode="multiple">` | 自制 multi-select |
+| 远程搜索选择 | `<Select showSearch filterOption={false}>` | 自制 autocomplete |
+| 级联选择 | `<Cascader>` | 多个联动 Select |
+| 树形选择 | `<TreeSelect>` | 自制树 |
+| 日期选择 | `<DatePicker>` | 自制日历 |
+| 时间选择 | `<TimePicker>` | 自制时钟 |
+| 日期范围 | `<RangePicker>` | 两个 DatePicker |
+| 开关切换 | `<Switch>` | Checkbox 模拟 |
+| 滑动选择 | `<Slider>` | 自制 range input |
+| 评分 | `<Rate>` | 星星图片 |
+| 颜色选择 | `<ColorPicker>` | input type="color" |
+| 上传文件 | `<Upload>` | 裸 input type="file" |
+| 上传图片（拖拽） | `<Upload.Dragger>` | 自制拖拽区 |
+| 整个表单 | `<Form>` + `<Form.Item>` | 手写 state 管理 |
+| 勾选框 | `<Checkbox>` | 裸 input type="checkbox" |
+| 单选框 | `<Radio>` / `<Radio.Group>` | 裸 input type="radio" |
+| 自动完成 | `<AutoComplete>` | 自制下拉 |
+| 提及 | `<Mention>` | 自制 @ 功能 |
+
+### 数据展示
+
+| 需求场景 | ✅ 必须用 | ❌ 禁止自造 |
+|----------|-----------|------------|
+| 数据表格 | `<Table>` | 手写 `<table>` |
+| 虚拟滚动大表格 | `<Table virtual>` | 自制虚拟列表 |
+| 列表 | `<List>` | 自制 ul/li |
+| 卡片 | `<Card>` | 自制 div+border |
+| 头像 | `<Avatar>` | 自制圆形图片 |
+| 徽标/角标 | `<Badge>` | 自制红点 |
+| 标签 | `<Tag>` | 自制 span+border |
+| 状态标签 | `<Tag color="success/error/warning">` | 自制彩色 div |
+| 时间线 | `<Timeline>` | 自制竖线列表 |
+| 统计数值 | `<Statistic>` | 自制数字+label |
+| 进度条 | `<Progress>` | 自制 div 进度 |
+| 树形结构 | `<Tree>` | 自制递归组件 |
+| 图片预览 | `<Image>` | 自制 lightbox |
+| 轮播 | `<Carousel>` | 自制滑块 |
+| 分割线 | `<Divider>` | 自制 hr |
+| 描述列表 | `<Descriptions>` | 自制 dl/dt/dd |
+| 日历 | `<Calendar>` | 自制日历格子 |
+| 甘特/时间轴 | `<Timeline>` 或 AntV Gantt | 自制 |
+| 折叠面板 | `<Collapse>` | 自制 accordion |
+| 标签页 | `<Tabs>` | 自制 tab state |
+
+### 反馈与提示
+
+| 需求场景 | ✅ 必须用 | ❌ 禁止自造 |
+|----------|-----------|------------|
+| 操作成功/失败提示 | `message.success/error/warning` | `alert()` / 自制 toast |
+| 表单校验提示 | `Form.Item rules` | 手写 if 判断后 alert |
+| 全局通知（有标题） | `notification.open` | 自制通知框 |
+| 危险操作确认 | `<Popconfirm>` | `window.confirm()` |
+| 复杂确认弹窗 | `<Modal>` | 自制 overlay |
+| 内嵌警告 | `<Alert>` | 自制警告 div |
+| 加载态（页面级） | `<Spin>` | CSS animation 自制 |
+| 加载态（内容占位） | `<Skeleton>` | 灰色方块自制 |
+| 无数据 | `<Empty>` | 自制空态 div |
+| 结果页（成功/失败） | `<Result>` | 自制全页状态 |
+| 进度反馈 | `<Progress>` | 自制 |
+| 引导步骤 | `<Tour>` | 自制引导 |
+
+### 导航
+
+| 需求场景 | ✅ 必须用 | ❌ 禁止自造 |
+|----------|-----------|------------|
+| 侧边菜单 | `<Menu>` | 自制导航列表 |
+| 顶部导航 | `<Menu mode="horizontal">` | 自制 nav bar |
+| 面包屑 | `<Breadcrumb>` | 手写 `/` 分隔 |
+| 分页 | `<Pagination>` | 自制 prev/next |
+| 步骤条 | `<Steps>` | 自制 stepper |
+| 锚点 | `<Anchor>` | 自制滚动锚点 |
+| 返回顶部 | `<BackTop>` | 自制按钮 |
+| 固定元素 | `<Affix>` | CSS position:sticky |
+
+### 布局与容器
+
+| 需求场景 | ✅ 必须用 | ❌ 禁止自造 |
+|----------|-----------|------------|
+| 弹窗 | `<Modal>` | 自制 overlay |
+| 抽屉 | `<Drawer>` | 自制 slide panel |
+| 气泡提示 | `<Tooltip>` | CSS title 属性 |
+| 气泡卡片 | `<Popover>` | 自制 popup |
+| 下拉菜单 | `<Dropdown>` | 自制 dropdown |
+| 行内元素间距 | `<Space>` | margin 硬写 |
+| 页面布局 | `<Layout>` | div 硬写 |
+| 栅格系统 | `<Row>` + `<Col>` | CSS grid 自制 |
+| 页头 | `<Breadcrumb>` + `<Typography.Title>` 组合（antd v5 已移除 PageHeader） | 自制标题+面包屑 |
+
+---
+
+## 组件 Props 优先级
+
+选对组件后，Props 的选择也要遵循规范：
+
+```tsx
+// Button 类型层级（从主到次）
+<Button type="primary">  → 页面主操作，每页最多 1-2 个
+<Button>                 → 次要操作（default 类型）
+<Button type="dashed">   → 添加类操作（如"+ 添加一行"）
+<Button type="text">     → 低优先级操作
+<Button type="link">     → 文字链接式操作（表格内的"编辑"）
+<Button danger>          → 危险/不可逆操作（删除）
+
+// Table 常用配置
+<Table
+  dataSource={data}
+  columns={columns}
+  loading={isLoading}          // 必须有 loading 态
+  pagination={{ pageSize: 20 }} // 超过 20 条必须分页
+  rowKey="id"                  // 必须指定 rowKey
+  scroll={{ x: 1200 }}         // 列多时水平滚动
+  size="middle"                // 默认 middle，紧凑用 small
+/>
+
+// Form 基本结构
+<Form
+  form={form}
+  layout="vertical"            // 字段多用 vertical，字段少用 horizontal
+  onFinish={handleSubmit}
+>
+  <Form.Item
+    name="fieldName"
+    label="字段标签"
+    rules={[{ required: true, message: '请输入...' }]}
+  >
+    <Input />
+  </Form.Item>
+  <Form.Item>
+    <Button type="primary" htmlType="submit" loading={loading}>
+      提交
+    </Button>
+  </Form.Item>
+</Form>
+```
+
+---
+
+## 必须检查的状态清单
+
+生成任何 UI 组件时逐项检查：
+
+- [ ] **hover 态**：可点击元素有 `hover:` 样式 + `transition-colors duration-150`
+- [ ] **focus 态**：表单元素有 focus ring（antd 组件默认处理）
+- [ ] **disabled 态**：禁用时有 `disabled` prop，不用 opacity 模拟
+- [ ] **loading 态**：异步操作有 `loading` 状态
+- [ ] **空态**：列表/表格无数据时有 `<Empty>` 或 `empty` prop
+- [ ] **错误态**：请求失败有 `message.error` 或 `<Alert type="error">`
+- [ ] **长文本**：有省略处理 `ellipsis` 或 `line-clamp`
+- [ ] **图标一致**：只用 `@ant-design/icons`，不混用其他图标库

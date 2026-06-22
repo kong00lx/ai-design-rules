@@ -1,0 +1,128 @@
+---
+description: Ant Design 色彩规范。包含完整 Token 体系、色彩使用原则和禁止事项。
+globs:
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.css"
+  - "**/*.less"
+  - "**/*.scss"
+alwaysApply: false
+---
+
+# Ant Design 色彩规范（Level 3）
+
+## 色彩哲学
+
+> 克制地用色。色彩服务于信息传递，而不是装饰。
+
+企业级产品的用色原则：**功能优先，克制表达**。避免彩虹配色，保持界面的信息密度而非视觉噪音。
+
+---
+
+## Ant Design 5.x 语义 Token（必须使用）
+
+### 品牌色（Brand）
+```
+colorPrimary        #1677ff  主色，用于主按钮、链接、选中态、焦点环
+colorPrimaryHover   #4096ff  主色 hover
+colorPrimaryActive  #0958d9  主色 active/pressed
+colorPrimaryBg      #e6f4ff  主色背景（极浅，用于 tag/badge 背景）
+colorPrimaryBorder  #91caff  主色边框
+```
+
+### 功能色（Semantic）
+```
+colorSuccess        #52c41a  成功 → 绿色
+colorSuccessBg      #f6ffed  成功背景
+colorSuccessBorder  #b7eb8f  成功边框
+
+colorWarning        #faad14  警告 → 黄色
+colorWarningBg      #fffbe6  警告背景
+colorWarningBorder  #ffe58f  警告边框
+
+colorError          #ff4d4f  错误/危险 → 红色
+colorErrorBg        #fff2f0  错误背景
+colorErrorBorder    #ffccc7  错误边框
+
+colorInfo           #1677ff  信息 → 与品牌色一致
+```
+
+### 中性色（Neutral / Text）
+```
+colorText           rgba(0,0,0,0.88)  正文主色
+colorTextSecondary  rgba(0,0,0,0.65)  次要文字
+colorTextTertiary   rgba(0,0,0,0.45)  辅助文字、placeholder
+colorTextDisabled   rgba(0,0,0,0.25)  禁用文字
+
+colorBgContainer    #ffffff           卡片/面板背景
+colorBgLayout       #f5f5f5           页面背景
+colorBgElevated     #ffffff           弹层背景（Modal/Dropdown）
+colorBorder         #d9d9d9           默认边框
+colorBorderSecondary #f0f0f0          分割线
+```
+
+---
+
+## 色彩使用原则
+
+### ✅ 正确用法
+
+```tsx
+// 用语义 Token，通过 ConfigProvider 或 antd 组件自动继承
+<Button type="primary">主要操作</Button>   // colorPrimary
+<Button danger>危险操作</Button>           // colorError
+<Tag color="success">成功</Tag>            // colorSuccess
+<Alert type="warning" />                   // colorWarning
+
+// 自定义样式时用 CSS 变量（antd v5 自动注入）
+.custom { color: var(--ant-color-primary); }
+```
+
+### ❌ 禁止用法
+
+```tsx
+// ❌ 魔法颜色数字
+<div style={{ color: '#1890ff' }} />   // 旧版主色，已废弃
+<div style={{ color: '#ff4d4f' }} />   // 直接写死红色
+
+// ❌ 非语义用色
+<Button style={{ background: 'green' }}>成功</Button>  // 应用 type="primary" + success Token
+
+// ❌ 用颜色传递唯一信息（色盲用户无法识别）
+// 必须同时搭配图标或文字区分状态
+```
+
+---
+
+## 色彩决策树
+
+```
+需要标记状态？
+├── 成功/完成    → colorSuccess (#52c41a) + CheckCircle 图标
+├── 错误/失败    → colorError  (#ff4d4f) + CloseCircle 图标
+├── 警告/注意    → colorWarning (#faad14) + ExclamationCircle 图标
+├── 信息/提示    → colorInfo   (#1677ff) + InfoCircle 图标
+└── 禁用/不可用  → colorTextDisabled (rgba 0.25) + cursor-not-allowed
+
+需要强调内容？
+├── 主要操作     → colorPrimary
+├── 次要信息     → colorTextSecondary
+└── 辅助/说明    → colorTextTertiary
+
+背景色？
+├── 页面背景     → colorBgLayout (#f5f5f5)
+├── 卡片/容器    → colorBgContainer (#ffffff)
+└── 弹层         → colorBgElevated (#ffffff)
+```
+
+---
+
+## 暗色模式
+
+antd v5 内置暗色 Token，通过 `ConfigProvider` 切换：
+```tsx
+import { theme } from 'antd';
+<ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+```
+
+暗色下所有语义 Token 自动映射，**不要手写暗色适配**。

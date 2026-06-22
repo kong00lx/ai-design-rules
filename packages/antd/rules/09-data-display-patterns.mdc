@@ -1,0 +1,233 @@
+---
+description: 数据展示设计模式。表格、列表、卡片的选择决策树和最佳实践。
+globs:
+  - "**/*.tsx"
+  - "**/*.jsx"
+alwaysApply: false
+---
+
+# 数据展示设计模式（Level 4）
+
+## 展示容器选择决策树
+
+```
+数据的特征？
+│
+├── 结构化、多字段、需要排序/筛选
+│   → <Table>（首选）
+│
+├── 结构化、字段较少、强调单条数据的视觉
+│   ├── 图片为主   → <List> + <List.Item.Meta avatar={...}>
+│   └── 文字为主   → <List> 或 <Table>
+│
+├── 异构数据、强调单条卡片的视觉
+│   → <Card> 网格布局（<Row> + <Col>）
+│
+├── 键值对展示（详情页）
+│   → <Descriptions>
+│
+├── 有层级关系的数据
+│   → <Tree> 或 Table 的展开行
+│
+├── 时序数据（操作记录、日志）
+│   → <Timeline>
+│
+└── 统计汇总数字
+    → <Statistic> 或 <Card> + <Statistic>
+```
+
+---
+
+## Table 最佳实践
+
+### 必须配置的 Props
+
+```tsx
+<Table
+  dataSource={data}
+  columns={columns}
+  rowKey="id"                      // ✅ 必须指定，不能用 index
+  loading={isLoading}              // ✅ 必须有 loading 态
+  pagination={{                    // ✅ 超过 20 条必须分页
+    current: page,
+    pageSize: 20,
+    total: total,
+    showSizeChanger: true,
+    showTotal: (total) => `共 ${total} 条`,
+    onChange: (page, size) => fetchData(page, size),
+  }}
+  locale={{ emptyText: <Empty description="暂无数据" /> }}  // ✅ 自定义空态
+/>
+```
+
+### 列定义规范
+
+```tsx
+const columns: ColumnsType<DataType> = [
+  {
+    title: '名称',
+    dataIndex: 'name',
+    key: 'name',
+    width: 200,                    // ✅ 需要固定列时必须指定宽度
+    ellipsis: { showTitle: false },// ✅ 长文本必须省略
+    render: (text) => (
+      <Tooltip title={text}>
+        <span>{text}</span>
+      </Tooltip>
+    ),
+    sorter: true,                  // 支持排序
+    fixed: 'left',                 // 固定左列
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
+    width: 100,
+    render: (status) => {
+      const config = {
+        active: { color: 'success', text: '启用' },
+        inactive: { color: 'default', text: '停用' },
+        pending: { color: 'warning', text: '待审核' },
+        error: { color: 'error', text: '异常' },
+      }[status];
+      return <Tag color={config.color}>{config.text}</Tag>;
+    },
+    filters: [
+      { text: '启用', value: 'active' },
+      { text: '停用', value: 'inactive' },
+    ],
+    onFilter: (value, record) => record.status === value,
+  },
+  {
+    title: '金额',
+    dataIndex: 'amount',
+    key: 'amount',
+    width: 120,
+    align: 'right',                // ✅ 数字必须右对齐
+    render: (val) => `¥${val.toLocaleString()}`,
+    sorter: (a, b) => a.amount - b.amount,
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 160,
+    fixed: 'right',                // ✅ 操作列固定在右侧
+    render: (_, record) => (
+      <Space size="small">
+        <Button type="link" size="small" onClick={() => handleEdit(record)}>
+          编辑
+        </Button>
+        <Popconfirm
+          title="确认删除？"
+          description="此操作不可撤销"
+          onConfirm={() => handleDelete(record.id)}
+          okText="删除"
+          okButtonProps={{ danger: true }}
+        >
+          <Button type="link" size="small" danger>
+            删除
+          </Button>
+        </Popconfirm>
+      </Space>
+    ),
+  },
+];
+```
+
+### 表格工具栏模式
+
+```tsx
+// 搜索 + 操作 + 表格 的标准布局
+<Card>
+  <div className="flex items-center justify-between mb-4">
+    <Space>
+      <Input.Search
+        placeholder="搜索名称..."
+        allowClear
+        onSearch={handleSearch}
+        style={{ width: 260 }}
+      />
+      <Select placeholder="状态筛选" allowClear style={{ width: 120 }}>
+        <Option value="active">启用</Option>
+        <Option value="inactive">停用</Option>
+      </Select>
+    </Space>
+    <Space>
+      {selectedRowKeys.length > 0 && (
+        <Button danger onClick={handleBatchDelete}>
+          批量删除 ({selectedRowKeys.length})
+        </Button>
+      )}
+      <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
+        新建
+      </Button>
+    </Space>
+  </div>
+
+  <Table
+    rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+    dataSource={data}
+    columns={columns}
+    loading={loading}
+    rowKey="id"
+    pagination={pagination}
+  />
+</Card>
+```
+
+---
+
+## Descriptions 最佳实践（详情页）
+
+```tsx
+<Descriptions
+  title="基本信息"
+  bordered                     // 有边框更清晰
+  column={{ xs: 1, sm: 2, md: 3 }}  // 响应式列数
+  size="middle"
+  extra={<Button type="primary">编辑</Button>}
+>
+  <Descriptions.Item label="姓名">张三</Descriptions.Item>
+  <Descriptions.Item label="状态">
+    <Tag color="success">启用</Tag>
+  </Descriptions.Item>
+  <Descriptions.Item label="创建时间">2024-01-01 12:00</Descriptions.Item>
+  <Descriptions.Item label="备注" span={3}>  {/* span 跨列 */}
+    这是一段很长的备注内容...
+  </Descriptions.Item>
+</Descriptions>
+```
+
+---
+
+## 状态标签规范
+
+| 业务状态 | Tag color | 配合图标 |
+|---------|-----------|---------|
+| 成功/完成/启用 | `success` (#52c41a) | `<CheckCircleOutlined>` |
+| 警告/待处理 | `warning` (#faad14) | `<ExclamationCircleOutlined>` |
+| 错误/失败/拒绝 | `error` (#ff4d4f) | `<CloseCircleOutlined>` |
+| 进行中/处理中 | `processing` (动画) | 自动 |
+| 默认/停用/草稿 | `default` (灰色) | — |
+| 信息 | `blue` | `<InfoCircleOutlined>` |
+
+```tsx
+// ✅ 状态标签必须同时用颜色 + 文字（不能只用颜色）
+<Tag color="success" icon={<CheckCircleOutlined />}>已完成</Tag>
+<Tag color="error" icon={<CloseCircleOutlined />}>已拒绝</Tag>
+<Tag color="processing">处理中</Tag>
+```
+
+---
+
+## 禁止事项
+
+```
+❌ Table 不设 rowKey（会导致 React key 警告和渲染问题）
+❌ 超过 20 条不分页（性能和体验都差）
+❌ 数字不右对齐（对比困难）
+❌ 长文本不加省略（破坏布局）
+❌ 操作列不固定右侧（列多时用户找不到）
+❌ 只用颜色区分状态（色盲用户无法识别）
+❌ 删除操作不加确认（Popconfirm 或 Modal.confirm）
+```

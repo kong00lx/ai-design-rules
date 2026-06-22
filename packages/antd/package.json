@@ -1,0 +1,13 @@
+{
+  "name": "@ai-design-rules/antd",
+  "version": "0.1.0",
+  "description": "AI-executable design rules for Ant Design projects",
+  "keywords": ["ant-design", "cursor-rules", "ai", "design-system", "ui"],
+  "files": [
+    "rules/",
+    "skills/"
+  ],
+  "scripts": {
+    "install-rules": "node ../../packages/cli/src/install.js --package=antd"
+  }
+}

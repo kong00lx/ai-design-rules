@@ -1,0 +1,154 @@
+---
+description: Ant Design 布局与间距规范。8px 网格系统、栅格、Space 组件使用准则。
+globs:
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.css"
+alwaysApply: false
+---
+
+# Ant Design 布局与间距规范（Level 3）
+
+## 核心：8px 网格系统
+
+antd 所有间距基于 **8px 基准单位**（部分场景用 4px 子单位）。
+
+**设计逻辑：** 8 能被 2、4 整除，适配各种屏幕密度。人眼对 8px 倍数的对齐更敏感。
+
+---
+
+## 间距 Token 对照表
+
+| Token | 值 | 对应 Tailwind | 使用场景 |
+|-------|-----|---------------|---------|
+| `paddingXXS` | 4px | `p-1` | 微间距（图标与文字） |
+| `paddingXS` | 8px | `p-2` | 紧凑间距（chip 内边距） |
+| `paddingSM` | 12px | `p-3` | 小型间距 |
+| `padding` | 16px | `p-4` | **标准内边距**（卡片内容区） |
+| `paddingMD` | 20px | `p-5` | 中等间距 |
+| `paddingLG` | 24px | `p-6` | 大间距（卡片 header） |
+| `paddingXL` | 32px | `p-8` | 超大间距（区块间距） |
+| `paddingXXL` | 48px | `p-12` | 页面级间距 |
+
+间距方向用法：
+```
+margin / padding + 方向后缀：
+  marginTop    marginRight    marginBottom    marginLeft
+  paddingTop   paddingRight   paddingBottom   paddingLeft
+```
+
+---
+
+## 栅格系统（antd Grid）
+
+24 列栅格，响应式断点：
+
+| 断点 | 宽度 | 典型场景 |
+|------|------|---------|
+| `xs` | < 576px | 手机竖屏 |
+| `sm` | ≥ 576px | 手机横屏 |
+| `md` | ≥ 768px | 平板 |
+| `lg` | ≥ 992px | 桌面 |
+| `xl` | ≥ 1200px | 宽屏 |
+| `xxl` | ≥ 1600px | 超宽屏 |
+
+```tsx
+// 标准表单布局
+<Row gutter={[16, 16]}>
+  <Col xs={24} sm={24} md={12} lg={8}>字段1</Col>
+  <Col xs={24} sm={24} md={12} lg={8}>字段2</Col>
+  <Col xs={24} sm={24} md={12} lg={8}>字段3</Col>
+</Row>
+
+// gutter 说明：[水平间距, 垂直间距]，值为 px
+// 推荐 gutter 值：8 / 16 / 24（8px 倍数）
+```
+
+---
+
+## Space 组件（行内元素间距）
+
+```tsx
+import { Space } from 'antd';
+
+// size 预设值
+<Space size="small">  {/* 8px  */}
+<Space size="middle"> {/* 16px */}
+<Space size="large">  {/* 24px */}
+
+// 自定义
+<Space size={12}>
+
+// 竖向排列
+<Space direction="vertical" size="middle">
+  <Button>操作1</Button>
+  <Button>操作2</Button>
+</Space>
+
+// 填充容器宽度（自动等分）
+<Space.Compact block>
+  <Input />
+  <Button type="primary">搜索</Button>
+</Space.Compact>
+```
+
+---
+
+## 页面布局模式
+
+### 标准后台布局
+```
+┌─────────────────────────────────────────┐
+│  Header (64px)                          │
+├──────────┬──────────────────────────────┤
+│ Sider    │  Content                     │
+│ (200px)  │  padding: 24px               │
+│          │  ┌────────────────────────┐  │
+│          │  │ PageHeader             │  │
+│          │  ├────────────────────────┤  │
+│          │  │ Content Area           │  │
+│          │  └────────────────────────┘  │
+└──────────┴──────────────────────────────┘
+```
+
+```tsx
+<Layout>
+  <Layout.Header className="h-16" />
+  <Layout>
+    <Layout.Sider width={200} />
+    <Layout.Content className="p-6" />
+  </Layout>
+</Layout>
+```
+
+### 内容区最大宽度
+```
+表单页面：max-width: 800px（防止输入框过长）
+详情页面：max-width: 1200px
+列表/表格：全宽（撑满内容区）
+```
+
+---
+
+## 间距决策树
+
+```
+两个元素之间的距离？
+│
+├── 同一组件内部元素（图标与文字）→ 4-8px
+├── 同一卡片内的表单字段         → 16-24px（垂直）
+├── 同一页面不同卡片之间          → 16-24px
+├── 页面主要区块之间              → 24-32px
+└── 页面边距（容器 padding）      → 24px（桌面），16px（移动）
+```
+
+---
+
+## 禁止事项
+
+```
+❌ 不用奇数间距（如 7px, 13px, 15px）→ 破坏网格对齐
+❌ 不用内联 style 写间距（如 style={{ marginTop: '16px' }}）→ 用 Tailwind 或 Space
+❌ 不在表格行内用 padding 超过 16px
+❌ 不把页面内容宽度设为 100vw（要考虑滚动条宽度）
+```

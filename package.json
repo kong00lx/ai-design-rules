@@ -1,0 +1,18 @@
+{
+  "name": "ai-design-rules",
+  "version": "0.0.1",
+  "private": true,
+  "description": "AI-executable design constraint instructions for UI component libraries",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

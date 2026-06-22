@@ -1,0 +1,237 @@
+---
+description: Ant Design 视觉设计四原则 + 交互设计六原则。让 AI 学会"判断"而不是"猜测"。
+alwaysApply: true
+---
+
+# Ant Design 设计原则（Level 2）
+
+## 视觉设计四原则（CRAP）
+
+所有视觉设计决策都应接受这四个原则的检验。
+
+---
+
+### 1. 对比（Contrast）
+
+**核心：** 不同的东西要看起来不同，相似的东西要一致。
+
+```
+✅ 主要操作 vs 次要操作
+   Primary Button (蓝色填充) vs Default Button (边框) vs Text Button (无边框)
+
+✅ 重要信息 vs 次要信息
+   fontWeight: 600 + colorText vs colorTextSecondary
+
+✅ 错误状态 vs 正常状态
+   colorError (红色) + 图标 vs colorText
+
+❌ 反例：两个同等重要的操作都用 Primary Button → 没有对比，用户不知先点哪个
+```
+
+**执行检查：** 如果页面只能有一个最显眼的元素，它是不是最重要的操作？
+- 是 → 通过
+- 否 → 降低次要元素的视觉权重（改用 `default` / `text` 类型按钮，或减小字号）
+
+---
+
+### 2. 重复（Repetition）
+
+**核心：** 同类元素保持一致的视觉处理。
+
+```
+✅ 所有危险操作 → danger 类型 + 红色
+✅ 所有成功状态 → 绿色 + CheckCircle 图标
+✅ 所有表单 label → 右对齐 or 统一左对齐，选一种坚持
+✅ 所有卡片 → 同样的 padding、圆角、阴影
+
+❌ 反例：A 页面删除按钮是红色，B 页面删除按钮是灰色
+❌ 反例：A 表单 label 靠左，B 表单 label 靠右
+```
+
+---
+
+### 3. 对齐（Alignment）
+
+**核心：** 每个元素都与页面上的某条参考线对齐。
+
+```
+✅ 表单字段左对齐
+✅ 表格数字右对齐，文字左对齐
+✅ 操作按钮组统一右对齐（页面级）或左对齐（内嵌式）
+✅ 卡片内容与卡片边距对齐
+
+❌ 反例：部分按钮居左，部分按钮居中
+❌ 反例：Modal 内容左对齐，footer 按钮居中
+```
+
+---
+
+### 4. 亲密性（Proximity）
+
+**核心：** 有关联的元素靠近，不相关的元素隔开。
+
+```
+✅ 表单 label 和 input 靠近（8-4px）
+✅ 一组操作按钮放在一起（相邻 8-16px）
+✅ 不同 section 之间有足够间距（24-32px）
+
+❌ 反例：表单 label 和下一行 input 距离相同（无法区分属于哪个）
+❌ 反例：孤立的按钮漂浮在页面中间，与任何内容都不相关
+```
+
+---
+
+## 交互设计六原则
+
+---
+
+### 1. 直截了当（Make it Direct）
+
+用直接操作代替弹窗确认。用户想做什么，就让他在原地做。
+
+```tsx
+// ✅ 直接在表格行内编辑
+<Table
+  columns={[
+    {
+      title: '名称',
+      render: (val, record) => (
+        <Typography.Text
+          editable={{ onChange: (v) => handleEdit(record.id, v) }}
+        >
+          {val}
+        </Typography.Text>
+      )
+    }
+  ]}
+/>
+
+// ❌ 点"编辑"按钮 → 弹 Modal → 再点"保存" （三步变一步）
+```
+
+---
+
+### 2. 留在当前页（Stay on the Page）
+
+能在当前页解决的事，不要跳转到新页面。
+
+```
+✅ 快速预览 → Drawer（抽屉）
+✅ 表单编辑 → Drawer 或内联展开
+✅ 确认操作 → Popconfirm（不弹 Modal）
+✅ 查看详情 → 展开行 / Tooltip / Popover
+
+❌ 点击查看详情跳转新页面（如果只是简单展示）
+❌ 每个小操作都弹一个新 Modal
+```
+
+---
+
+### 3. 轻量操作（Keep it Lightweight）
+
+减少用户需要做的决定。能默认的就默认，能推断的就推断。
+
+```tsx
+// ✅ 智能默认值
+<DatePicker defaultValue={dayjs()} />  // 默认今天
+
+// ✅ 批量操作前的选择
+<Table rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }} />
+<Button disabled={!selectedRowKeys.length} onClick={handleBatchDelete}>
+  批量删除 ({selectedRowKeys.length})
+</Button>
+
+// ❌ 每行都要用户点击确认的操作
+```
+
+---
+
+### 4. 提供邀请（Provide an Invitation）
+
+让用户发现可交互的元素。hover 状态、引导文字、空态引导都是"邀请"。
+
+```tsx
+// ✅ hover 显示操作
+<Table
+  columns={[
+    {
+      title: '操作',
+      render: () => (
+        <Space className="opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button type="link">编辑</Button>
+          <Button type="link" danger>删除</Button>
+        </Space>
+      )
+    }
+  ]}
+/>
+
+// ✅ 空态引导
+<Empty
+  description="还没有任何数据"
+  image={Empty.PRESENTED_IMAGE_SIMPLE}
+>
+  <Button type="primary" icon={<PlusOutlined />}>
+    立即创建
+  </Button>
+</Empty>
+```
+
+---
+
+### 5. 即时响应（React Immediately）
+
+操作后立即给出反馈，不要让用户等待和猜测。
+
+```tsx
+// ✅ 乐观更新 + loading 态
+const [loading, setLoading] = useState(false);
+const handleSubmit = async () => {
+  setLoading(true);
+  try {
+    await submitData();
+    message.success('保存成功');
+  } catch {
+    message.error('保存失败，请重试');
+  } finally {
+    setLoading(false);
+  }
+};
+
+<Button type="primary" loading={loading} onClick={handleSubmit}>
+  保存
+</Button>
+```
+
+---
+
+### 6. 使用过渡（Use Transition）
+
+用动画解释状态变化的因果关系，但**不要自定义 antd 组件的内置动效**。
+
+**判断规则：需不需要加自定义过渡？**
+
+```
+操作导致内容消失/出现？
+├── 是 antd 组件行为（Modal/Drawer/Dropdown 开关）
+│   → 不处理，antd 已内置最优动效
+│
+├── 自定义列表项的新增/删除
+│   → 加 CSS transition（高度/透明度渐变）
+│   → className="transition-all duration-200"
+│
+└── 页面路由跳转
+    → 不加过渡（企业后台不需要页面转场动画）
+```
+
+```tsx
+// ✅ 列表项删除过渡（唯一推荐的自定义场景）
+<div className={`transition-all duration-200 overflow-hidden ${
+  isRemoving ? 'max-h-0 opacity-0' : 'max-h-32 opacity-100'
+}`}>
+  {item}
+</div>
+
+// ❌ 不要覆盖 antd 组件的 transitionName 或 animation
+// ❌ 不要在页面路由跳转时加 fade 动画（会让企业应用显得卡顿）
+```
