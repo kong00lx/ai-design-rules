@@ -7,8 +7,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "pnpm -r build",
-    "lint": "pnpm -r lint"
+    "build": "npm run build -w packages/cli",
+    "release:patch": "npm version patch -w packages/antd -w packages/cli && npm run build -w packages/cli && npm publish -w packages/antd -w packages/cli && git push --follow-tags",
+    "release:minor": "npm version minor -w packages/antd -w packages/cli && npm run build -w packages/cli && npm publish -w packages/antd -w packages/cli && git push --follow-tags",
+    "release:major": "npm version major -w packages/antd -w packages/cli && npm run build -w packages/cli && npm publish -w packages/antd -w packages/cli && git push --follow-tags"
   },
   "engines": {
     "node": ">=22.0.0",
