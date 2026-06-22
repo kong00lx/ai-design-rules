@@ -4,7 +4,12 @@ import ora from 'ora';
 import path from 'path';
 import fs from 'fs-extra';
 import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
+import {
+  detectTokensFromSource,
+  applyTokensToRules,
+  saveConfig,
+  type TokenOverrides,
+} from '../utils/tokens.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -144,16 +149,33 @@ export async function init(): Promise<void> {
     fs.copySync(srcSkills, skillsDir, { overwrite: true });
     const skillCount = fs.readdirSync(skillsDir).length;
 
+    // 自动检测并应用项目 token
+    const detectedTokens = detectTokensFromSource(projectRoot);
+    const overrides: TokenOverrides = {};
+    for (const [k, v] of Object.entries(detectedTokens)) {
+      overrides[k as keyof TokenOverrides] = v;
+    }
+    const tokenUpdated = Object.keys(overrides).length > 0
+      ? applyTokensToRules(rulesDir, overrides)
+      : 0;
+
+    // 保存配置
+    saveConfig(projectRoot, library, preset, overrides);
+
     // 更新 AGENTS.md
     updateAgentsMd(projectRoot, library, preset);
 
     spinner.succeed(chalk.green(`  安装完成`));
 
+    const tokenNote = tokenUpdated > 0
+      ? `\n  ${chalk.cyan('Token')} 已同步 ${tokenUpdated} 个规则文件（检测到自定义主题）`
+      : '';
+
     console.log(`
   ${chalk.bold('已安装：')}
   ${chalk.cyan(`${copiedRules}`)} 个 Rules  → ${chalk.gray('.cursor/rules/')}
   ${chalk.cyan(`${skillCount}`)} 个 Skills → ${chalk.gray('.agents/skills/')}
-  ${chalk.cyan('AGENTS.md')} 已更新
+  ${chalk.cyan('AGENTS.md')} 已更新${tokenNote}
 
   ${chalk.bold('开始使用：')}
   ${chalk.gray('重启 Cursor，然后在对话中输入：')}

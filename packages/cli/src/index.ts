@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { init } from './commands/init.js';
+import { sync } from './commands/sync.js';
 
 const program = new Command();
 
@@ -13,5 +14,10 @@ program
   .command('init')
   .description('Initialize AI design rules in the current project')
   .action(init);
+
+program
+  .command('sync')
+  .description('Sync custom antd theme tokens into installed rule files')
+  .action(sync);
 
 program.parse();
