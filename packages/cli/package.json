@@ -1,0 +1,35 @@
+{
+  "name": "@ai-design-rules/cli",
+  "version": "0.1.0",
+  "description": "CLI tool for ai-design-rules — install AI-executable design rules into your project",
+  "keywords": ["cursor-rules", "ai", "design-system", "ant-design", "cli"],
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ai-design-rules": "./dist/index.js"
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --clean --no-splitting && node scripts/sync-assets.js",
+    "dev": "tsup src/index.ts --format esm --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.0.0",
+    "chalk": "^5.0.0",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.0.0",
+    "ora": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.0",
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
