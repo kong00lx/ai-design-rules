@@ -1,6 +1,18 @@
 # ai-design-rules
 
+[![npm version](https://img.shields.io/npm/v/ai-design-rules)](https://www.npmjs.com/package/ai-design-rules)
+[![npm downloads](https://img.shields.io/npm/dm/ai-design-rules)](https://www.npmjs.com/package/ai-design-rules)
+[![license](https://img.shields.io/npm/l/ai-design-rules)](./LICENSE)
+
 将 UI 组件库的设计规范体系提炼成 **AI 可执行的设计约束指令**，让 AI 生成接近设计师水准的 UI。
+
+## 快速开始
+
+```bash
+npx ai-design-rules init
+```
+
+在项目根目录运行，交互式选择组件库和安装模式，自动写入 `.cursor/rules/` 和 `.agents/skills/`。
 
 ## 为什么需要这个
 
