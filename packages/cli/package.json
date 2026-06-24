@@ -1,5 +1,5 @@
 {
-  "name": "@ai-design-rules/cli",
+  "name": "ai-design-rules",
   "version": "0.1.0",
   "description": "CLI tool for ai-design-rules — install AI-executable design rules into your project",
   "keywords": ["cursor-rules", "ai", "design-system", "ant-design", "cli"],

@@ -14,11 +14,8 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const LITE_RULES = [
-  '01-design-philosophy.mdc',
-  '02-design-principles.mdc',
-  '12-component-selection.mdc',
-];
+// lite 模式只安装主规范文件，跳过三个场景决策树
+const LITE_RULES = ['antd-design.mdc'];
 
 function getAssetsDir(library: string): string {
   return path.resolve(__dirname, '..', 'assets', library);
@@ -102,11 +99,11 @@ export async function init(): Promise<void> {
     message: '安装模式：',
     choices: [
       {
-        name: `${chalk.green('full')}  完整版 — 12 个规则 + 3 个 Skills（推荐）`,
+        name: `${chalk.green('full')}  完整版 — 主规范 + 3 个场景决策树 + Skills（推荐）`,
         value: 'full',
       },
       {
-        name: `${chalk.yellow('lite')}  精简版 — 3 个核心规则 + 3 个 Skills（节省 context）`,
+        name: `${chalk.yellow('lite')}  精简版 — 仅主规范文件 + Skills（context 最省）`,
         value: 'lite',
       },
     ],
