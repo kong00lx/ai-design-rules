@@ -1,0 +1,220 @@
+---
+description: Ant Design 完整设计规范。覆盖设计哲学、视觉原则、色彩、字体、布局、组件选择、交互模式的全量可执行规则。
+alwaysApply: true
+---
+
+# Ant Design Design Rules
+
+## Key Principles
+- Never build custom UI for anything antd already provides — check antd first.
+- Every page has exactly one Primary action; demote all others to default, text, or link type.
+- Every async operation must show a loading state, a success feedback, and an error feedback.
+- Every list or table must handle the empty state with `<Empty>`.
+
+## Before Writing UI Code
+1. Identify the user's task goal, not just the component to render.
+2. Choose the right container: Table for structured multi-field data, List for visual cards, Descriptions for key-value detail pages.
+3. Verify all four states exist: loading / success / error / empty.
+4. Confirm there is only one `type="primary"` button per view.
+
+## Rules
+
+### Design Philosophy
+- Place primary actions (Submit / Save / Create) at the bottom-right of content or in Modal footer right side.
+- Place Cancel / Back always to the left of the primary action.
+- Place "New" / "Create" buttons at the top-right of list pages.
+- Use `danger` prop for all destructive actions — never style them with neutral gray.
+- Attach `<Tooltip>` to every icon-only button; don't rely on bare icons to convey intent.
+- Pre-fill or infer values wherever possible to reduce the number of fields users must fill.
+- Collapse advanced or infrequently used settings into `<Collapse>` — don't expand them by default.
+- Put secondary actions inside `<Dropdown menu>`, not as top-level buttons.
+- Drive navigation menus from an `items` array, not hardcoded JSX menu items.
+- Define table columns from a `columns` array, not hardcoded `<th>` tags.
+- Use `<Row>/<Col>` for card grids — don't use fixed pixel widths in flex.
+- Design for the empty state, a single item, and hundreds of items simultaneously.
+- Hide features the user lacks permission for — don't show them as disabled.
+
+### Visual Principles
+- Make the single most visually prominent element on the page the most important action. If it isn't, reduce the visual weight of competing elements.
+- Use `type="primary"` (filled) for the main action, `default` (outlined) for secondary, `text` for low-priority, `link` for in-table actions.
+- Apply `danger` to all destructive buttons so red consistently means "irreversible".
+- Align all numbers in table columns to the right.
+- Align form labels either all left or all right — pick one and stay consistent.
+- Keep the same padding, border-radius, and shadow on all cards within a page.
+- Group related elements close together (4–8px within a component, 16–24px between fields in a card, 24–32px between sections).
+- Don't use custom transitions on antd component open/close behavior — the built-in animations are already optimal.
+- Use `className="transition-all duration-200"` only for custom list item add/remove animations.
+- Don't add page-route transition animations in enterprise admin apps.
+
+### Colors
+- Use antd semantic tokens via component props or CSS variables — never hardcode hex color values.
+- Use `type="primary"` / `colorPrimary` for the main brand color.
+- Use `colorSuccess` (#52c41a) + CheckCircle icon for success states.
+- Use `colorError` (#ff4d4f) + CloseCircle icon for error/danger states.
+- Use `colorWarning` (#faad14) + ExclamationCircle icon for warning states.
+- Use `colorTextSecondary` for secondary text, `colorTextDisabled` for disabled text.
+- Use `colorBgLayout` for page background, `colorBgContainer` for card/panel background.
+- Use `var(--ant-color-primary)` in CSS when you need the primary color in custom styles.
+- Don't use color as the only differentiator between states — always pair color with an icon or text label.
+- Don't write `style={{ color: '#1890ff' }}` or any other hardcoded color value.
+- Don't write manual dark mode styles — antd's `theme.darkAlgorithm` handles all token remapping automatically.
+
+### Typography
+- Use `<Typography.Title level={1}>` (38px) for the single page-level heading only.
+- Use `<Typography.Title level={2–4}>` (30/24/20px) for section and block headings.
+- Use `<Typography.Title level={5}>` (16px) for card headers and component-level titles.
+- Use `<Typography.Text>` (14px) for body content.
+- Use `<Typography.Text type="secondary">` for descriptions and hints.
+- Use 12px / `colorTextDisabled` for timestamps and captions only.
+- Use `<Typography.Text code>` for inline code snippets.
+- Use `<Text ellipsis={{ tooltip: fullText }}>` for long text that might overflow.
+- Use `fontWeight: 600` for headings — don't use 700 (bold) in enterprise UI.
+- Don't set body text smaller than 14px.
+- Don't use more than 3 distinct font sizes within a single card.
+- Don't write font sizes as inline `px` values — use antd tokens or Tailwind `text-*` classes.
+
+### Layout & Spacing
+- Use 8px as the base spacing unit; all spacing values must be multiples of 4px or 8px.
+- Use Tailwind spacing classes (`p-4`, `mb-6`, `gap-4`) instead of inline style spacing.
+- Use `<Space size="small|middle|large">` for inline element gaps (8 / 16 / 24px).
+- Use `<Row gutter={[16, 16]}>` + `<Col>` for responsive form and card grids.
+- Set `max-width: 800px` on form pages to prevent inputs from stretching too wide.
+- Set `max-width: 1200px` on detail pages; let tables and lists fill the full content width.
+- Use standard Layout: Header 64px, Sider 200px, Content padding 24px.
+- Don't use odd spacing values (7px, 13px, 15px) — they break grid alignment.
+- Don't write `style={{ marginTop: '16px' }}` — use Tailwind or `<Space>`.
+- Don't set table row padding above 16px.
+- Don't set `width: 100vw` on page content — account for the scrollbar width.
+
+### Shadow & Elevation
+- Use antd `<Card>` for Layer 1 elements — the default shadow is already correct.
+- Use `<Card hoverable>` for clickable cards — it adds the hover shadow automatically.
+- Don't write custom `box-shadow` values — use antd's built-in shadow tokens.
+- Don't use shadow to differentiate same-level content — use `border` or `background` instead.
+- Don't add `box-shadow` to plain text or icons.
+- Don't use z-index values above 1010 unless there is a documented reason.
+- Never use magic z-index numbers like 9999.
+
+### Motion & Animation
+- Don't override antd component transition names or animations.
+- Use `Skeleton` instead of `Spin` for content that is loading on initial page render.
+- Use `<Spin spinning={loading}>` to wrap content that reloads in place.
+- Don't animate table row data updates — it causes visual confusion.
+- Don't animate every keystroke result in live-search inputs.
+- Always respect `prefers-reduced-motion` by adding the global CSS media query override.
+- Use `transition-colors duration-150` for hover color changes on buttons and links.
+- Use `transition-opacity duration-200` for fade in/out effects.
+- Don't use `transition-all` — it performs poorly and animates unintended properties.
+
+### Forms
+- Always use `Form.useForm()` — never manage form field state manually with `useState`.
+- Always set `validateTrigger={['onBlur', 'onSubmit']}` on `<Form>` — only use `onChange` validation for password strength or username availability checks.
+- Write validation messages as positive guidance: "请输入邮箱" not "邮箱不能为空".
+- Always include `placeholder` on every input field.
+- Set `scrollToFirstError` on `<Form>` so the page scrolls to the first validation error on submit.
+- Use `<Input>` for short text, `<Input.TextArea autoSize>` for long text, `<InputNumber>` for numbers.
+- Use `<Radio.Group>` for ≤4 options, `<Select>` for 5–15 options, `<Select showSearch>` for >15 options.
+- Use `<Checkbox.Group>` for ≤5 multi-select options, `<Select mode="multiple">` for more.
+- Use `<Switch>` for immediate-effect toggles, `<Checkbox>` for submit-time toggles.
+- Use `<Cascader>` for 2–3 level hierarchical selection, `<TreeSelect>` for tree-structured data.
+- Use `<DatePicker showTime>` for combined date+time, `<RangePicker>` for date ranges.
+- Use a single-column vertical layout for 4–8 fields; use two columns (`md={12}`) for 9–15 fields.
+- Use `<Steps>` + per-step `<Form>` for form flows with a clear sequence of stages.
+- Don't use `alert()` for validation errors — use `Form.Item rules`.
+- Don't mark every field as required — it frustrates users.
+- Don't use `DatePicker` on mobile — use native `input type="date"` instead.
+
+### Data Display
+- Always set `rowKey="id"` on `<Table>` — never use array index as the key.
+- Always set `loading={isLoading}` on `<Table>`.
+- Always add `pagination` with `showSizeChanger` and `showTotal` for tables with more than 20 rows.
+- Always set `locale={{ emptyText: <Empty description="暂无数据" /> }}` on `<Table>`.
+- Always right-align number columns with `align: 'right'`.
+- Always add `ellipsis: { showTitle: false }` + `<Tooltip>` render for long text columns.
+- Always fix the action column to the right with `fixed: 'right'`.
+- Use `<Tag color="success|warning|error|processing|default">` for status labels — always pair color with a text label.
+- Use `<Descriptions bordered column={{ xs:1, sm:2, md:3 }}>` for key-value detail pages.
+- Use `<Statistic>` for summary metric numbers.
+- Use `<Timeline>` for chronological event logs.
+- Don't render a table with more than 20 rows without pagination.
+- Don't display status with color alone — always include a text label.
+- Don't skip the delete confirmation on table row actions.
+
+### Navigation
+- Use `<Menu mode="inline">` + `<Layout.Sider>` for apps with 10–30 pages.
+- Use `<Menu mode="horizontal">` for apps with 5–10 pages.
+- Keep menus to a maximum of 3 levels — flatten deeper hierarchies.
+- Show `<Breadcrumb>` whenever page depth exceeds 2 levels; don't add `href` to the current page item.
+- Drive `<Menu>` from a `items` data array — don't hardcode JSX menu items.
+- Use `<Tabs>` for different views of the same data (basic info / activity log / related items).
+- Use `<Segmented>` for filter switching (All / Active / Completed) — not `<Tabs>`.
+- Use `<Steps>` for sequential stage flows where the user must complete each stage in order — not `<Tabs>`.
+- Use `<Menu>` + router for primary navigation — not `<Tabs>`.
+- Show `showQuickJumper` on `<Pagination>` only when total exceeds 100 rows.
+- Default page size is 20; offer [10, 20, 50, 100] in `pageSizeOptions`.
+- Don't display the full sidebar on mobile — wrap it in a `<Drawer>`.
+- Don't add `href` to the current page breadcrumb item.
+- Don't use `<Tabs>` as a substitute for router-based page navigation.
+- Don't render a menu item without an icon.
+- Don't show pagination without a total count.
+
+### Feedback & Notifications
+- Use `message.success/error/warning` for lightweight operation feedback (save, update, toggle) — auto-dismiss after 2–3 seconds.
+- Use `<Popconfirm>` for simple danger-action confirmation (single row delete) — it stays inline, no overlay.
+- Use `Modal.confirm` for batch operations or actions that require explaining consequences.
+- Use `<Modal>` for create/edit forms with more than 5 fields or that require full focus.
+- Use `<Drawer>` for editing without leaving the list, or for viewing details while keeping list context.
+- Use `notification.open` for system-level events (background task completed, new message arrived).
+- Use `<Alert>` for inline contextual warnings that don't interrupt the user's flow.
+- Set `destroyOnHide` on all `<Modal>` components to prevent stale data from persisting.
+- Set `confirmLoading` on Modal `onOk` to show a spinner while the async operation runs.
+- Set `message` duration to 2s for success/info, 3s for errors, 0 for loading states.
+- Set `maxCount={3}` on the message config to prevent toast stacking.
+- Don't use `window.alert()` or `window.confirm()` anywhere.
+- Don't put more than 30 characters in a `message` toast — use `notification` or `<Alert>` for longer content.
+- Don't nest one `<Modal>` inside another.
+- Don't skip the loading state on any async button action.
+- Don't leave a list or table empty without an `<Empty>` component.
+
+### Component Selection
+- Use `<Input>` — not bare `<input>`.
+- Use `<Input.TextArea>` — not bare `<textarea>`.
+- Use `<InputNumber>` — not `<input type="number">`.
+- Use `<Select>` — not a custom dropdown.
+- Use `<DatePicker>` — not a custom calendar.
+- Use `<Switch>` — not a checkbox styled as a toggle.
+- Use `<Form>` + `<Form.Item>` — not manual state management for forms.
+- Use `<Table>` — not a hand-written `<table>`.
+- Use `<List>` — not custom `<ul>/<li>`.
+- Use `<Card>` — not a div with manual border and padding.
+- Use `<Tag>` — not a custom colored span.
+- Use `<Badge>` — not a custom notification dot.
+- Use `<Avatar>` — not a custom circular image.
+- Use `<Tooltip>` — not the HTML `title` attribute.
+- Use `<Popover>` — not a custom popup div.
+- Use `<Dropdown>` — not a custom dropdown menu.
+- Use `<Modal>` — not a custom overlay.
+- Use `<Drawer>` — not a custom slide panel.
+- Use `<Space>` — not hardcoded margin between inline elements.
+- Use `<Pagination>` — not custom prev/next buttons.
+- Use `<Steps>` — not a custom stepper component.
+- Use `<Breadcrumb>` + `<Typography.Title>` for page headers — `PageHeader` was removed in antd v5.
+- Use `<Empty>` — not a custom empty state div.
+- Use `<Result>` — not a custom full-page status component.
+- Use `<Skeleton>` — not gray placeholder boxes.
+- Use `<Spin>` — not a custom CSS spinner.
+- Use `message.success/error` — not `alert()` or a custom toast.
+- Use `<Popconfirm>` — not `window.confirm()`.
+- Use `notification.open` — not a custom notification component.
+- Use only `@ant-design/icons` — don't mix in other icon libraries.
+
+### State Checklist
+Before finishing any UI component, verify all of the following:
+- [ ] Hover state: clickable elements have `hover:` Tailwind styles + `transition-colors duration-150`.
+- [ ] Disabled state: use the `disabled` prop — don't simulate with `opacity`.
+- [ ] Loading state: async operations set a `loading` boolean on the triggering button.
+- [ ] Empty state: every list and table renders `<Empty>` when data is absent.
+- [ ] Error state: failed requests show `message.error` or `<Alert type="error">`.
+- [ ] Long text: columns and containers use `ellipsis` or `line-clamp` to prevent layout breakage.
+- [ ] Icons: only `@ant-design/icons` is used — no mixed icon libraries.
+- [ ] Delete/danger actions: always wrapped in `<Popconfirm>` or `Modal.confirm`.
